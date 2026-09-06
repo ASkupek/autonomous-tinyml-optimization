@@ -1,0 +1,28 @@
+{
+    "rank": 1,
+    "layer_structure": [
+        82,
+        105,
+        57,
+        29
+    ],
+    "activation_type": "relu",
+    "layer_norm": false,
+    "parameter_count": 38117,
+    "model_size_kb": 148.89,
+    "tinyml_cost": 150.5761,
+    "validation_loss": 0.002674,
+    "is_valid": true,
+    "weights_path": "ml_pipeline/exported_models\\model_rank_1.pt",
+    "tflite_path": "ml_pipeline/exported_models\\model_rank_1.tflite",
+    "c_header_path": "ml_pipeline/exported_models\\model_rank_1.h",
+    "tflite_size_kb": 153.34,
+    "verification": {
+        "pt_tf_mae": 3.417535587857401e-09,
+        "pt_tf_rmse": 2.2961353707273702e-08,
+        "pt_tf_max": 1.1622905731201172e-06,
+        "tf_tflite_mae": 0.004940675105899572,
+        "tf_tflite_rmse": 0.014393487945199013,
+        "tf_tflite_max": 0.48955070972442627
+    }
+}

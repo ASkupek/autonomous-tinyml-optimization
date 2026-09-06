@@ -1,0 +1,65 @@
+[
+  {
+    "gen": 1,
+    "candidate_idx": 0,
+    "val_loss": 0.02303132973611355,
+    "tinyml_cost": 150.57611458205307,
+    "is_pareto": true
+  },
+  {
+    "gen": 1,
+    "candidate_idx": 1,
+    "val_loss": 999.0,
+    "tinyml_cost": 167.64535833336413,
+    "is_pareto": false
+  },
+  {
+    "gen": 1,
+    "candidate_idx": 2,
+    "val_loss": 999.0,
+    "tinyml_cost": 209.19156666705385,
+    "is_pareto": false
+  },
+  {
+    "gen": 2,
+    "candidate_idx": 0,
+    "val_loss": 0.02303132973611355,
+    "tinyml_cost": 150.57611458205307,
+    "is_pareto": true
+  },
+  {
+    "gen": 2,
+    "candidate_idx": 1,
+    "val_loss": 0.0240727998316288,
+    "tinyml_cost": 148.25344791449606,
+    "is_pareto": true
+  },
+  {
+    "gen": 2,
+    "candidate_idx": 2,
+    "val_loss": 0.0261607076972723,
+    "tinyml_cost": 150.36834790495536,
+    "is_pareto": false
+  },
+  {
+    "gen": 3,
+    "candidate_idx": 0,
+    "val_loss": 0.02303132973611355,
+    "tinyml_cost": 150.57611458205307,
+    "is_pareto": true
+  },
+  {
+    "gen": 3,
+    "candidate_idx": 1,
+    "val_loss": 0.023703498765826225,
+    "tinyml_cost": 147.9820479239958,
+    "is_pareto": true
+  },
+  {
+    "gen": 3,
+    "candidate_idx": 2,
+    "val_loss": 0.0240727998316288,
+    "tinyml_cost": 148.25344791449606,
+    "is_pareto": false
+  }
+]
