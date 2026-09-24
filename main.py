@@ -25,11 +25,16 @@ Example:
 """
 
 from use_cases.carla_driving.carla_settings import CarlaProjectConfig, CONFIG
-
+from use_cases.carla_driving.carla_provider import CarlaDataProvider
 if __name__ == "__main__":
 
-    config = CONFIG
-    print(config.ai.batch_size)
+   config = CONFIG
+   data_provider = CarlaDataProvider(config=CONFIG)
+   train, validation, test = data_provider.prepare_datasets()
+
+   
+
+
 
 
     

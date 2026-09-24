@@ -84,7 +84,7 @@ class CarlaProjectConfig(GlobalConfig):
 
     pipeline: CarlaPipelineConfig = field(default_factory=lambda: CarlaPipelineConfig(
         dataset_path="use_cases/carla_driving/data/raw/carla_dataset.csv",
-        scaler_path="use_cases/carla_driving/models/scaler.pkl",
+        scaler_path="use_cases/carla_driving/data/artifacts/scaler.pkl",
         input_features=["speed", "acceleration", "lane_offset", "heading_error"],
         target_outputs=["steer"]
     ))
