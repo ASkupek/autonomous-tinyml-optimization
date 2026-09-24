@@ -36,3 +36,11 @@ This .py file with final class is inherit from our setting and this is a must th
 
 
 The tests for those changes are added.
+
+## Data preparation changes
+At the moment we decide that the first step and release for 0.2.0 will be only separation between core and use_case code. So at the moment we are not introducing multiple interfaces, but just one method that then need to be rewriten in the use_case.
+In core/data_processing we added two classes:
+* base_dataset.py : BaseDataset -> this one is just for creading pytorch tensor and it is provided at bare minumum at the moment -> TODO: Need to be tested for other datasets
+* base_provider.py: BaseDataProvider -> Introduces at the moment prepare_dataset method that need to be rewritten for each usecase.
+
+User can then add into use_cases/their_usecase/ a file for example: carla_provider.py that implements prepare_dataset and return the 3 objects (train, validation and test) datasets. In future we will break out method to multiple methods to have nicer coding standard.
