@@ -7,56 +7,57 @@ ingestion, preprocessing pipelines, and domain-specific dataset generation.
 
 from abc import ABC, abstractmethod
 from typing import Tuple
+from core.configuration.base_config import GlobalConfig
 from core.data_preprocessing.base_dataset import BaseDataset
 
 
 class BaseDataProvider(ABC):
+    """Abstract base class for domain-specific data providers.
+
+    A data provider is responsible for obtaining and preparing data for a
+    specific use case. The concrete implementation defines how the raw data
+    is loaded, cleaned, transformed, split, and converted into datasets.
+
+    The core framework only requires the provider to expose a common
+    :meth:`prepare_datasets` contract. Domain-specific processing logic
+    remains outside the core package.
+
+    Args:
+        config: Framework configuration containing the parameters required
+            by the concrete data provider.
+
+    Example:
+        A domain-specific provider can implement the contract as follows::
+
+            class CustomDataProvider(BaseDataProvider):
+
+                def prepare_datasets(self):
+                    # Domain-specific data preparation.
+                    return train_dataset, validation_dataset, test_dataset
     """
-        Abstract Base Class (ABC) defining the mandatory contract for all data providers.
-        
-        Every domain-specific use case (e.g., CARLA autonomous driving, audio sensors, 
-        industrial IoT) must inherit from this class and implement the `prepare_datasets` 
-        method. This enforces a unified architecture across the entire framework while 
-        granting full implementation freedom to individual domains.
 
-        Attributes:
-            config: Configuration object containing pipeline parameters, paths, and settings.
-
-        Example:
-            >>> class CustomDataProvider(BaseDataProvider):
-            ...     def prepare_datasets(self):
-            ...         # Custom loading and preprocessing logic here
-            ...         return train_ds, val_ds, test_ds
-        """
-
-    def __init__(self, config) -> None:
-        """
-        Initializes the data provider with a given configuration framework.
+    def __init__(self, config: GlobalConfig) -> None:
+        """Initialize the data provider.
 
         Args:
-            config: Configuration object containing dataset paths, feature bounds, 
-                    and pipeline hyper-parameters.
+            config: Framework configuration used by the data provider.
         """
         self.config = config
 
     @abstractmethod
     def prepare_datasets(self) -> Tuple[BaseDataset, BaseDataset, BaseDataset]: 
-        """
-        Abstract template method for executing the full data pipeline.
-        
-        Concrete implementations must handle:
-            1. Loading raw data (e.g., CSV, binary streams).
-            2. Cleaning, filtering (e.g., boundaries, NaNs), and splitting 
-               to prevent data leakage.
-            3. Scaling features (e.g., StandardScaler, RobustScaler) and saving state.
-            4. Windowing or formatting for time-series / model requirements.
-            5. Wrapping the resulting arrays into `BaseDataset` instances.
+        """Prepare datasets required by the training pipeline.
+
+        Concrete implementations are responsible for performing all
+        use-case-specific data preparation required before training.
+
+        The exact processing steps are intentionally left to the concrete
+        implementation. Depending on the use case, these may include data
+        loading, cleaning, filtering, splitting, scaling, windowing, or
+        other transformations.
 
         Returns:
-            Tuple[BaseDataset, BaseDataset, BaseDataset]: A tuple containing 
-            the training, validation, and testing dataset objects.
-        
-        Raises:
-            NotImplementedError: If a concrete subclass fails to implement this method.
+            A tuple containing the training, validation, and test datasets,
+            respectively.
         """
         pass

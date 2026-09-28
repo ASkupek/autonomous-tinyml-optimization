@@ -20,7 +20,6 @@ def test_default_ai_and_nas_configs():
 def test_pipeline_config_fail_fast():
     """Test that PipelineConfig raises a TypeError if mandatory fields are missing."""
     with pytest.raises(TypeError):
-        # Namerno izpustimo obvezne argumente, da preverimo Fail-Fast obnašanje
         PipelineConfig()
 
 
@@ -31,7 +30,6 @@ def test_project_config_inheritance():
     class DummyProjectConfig(GlobalConfig):
         custom_param: str = "test_value"
 
-    # Pravilna inicializacija z obveznimi pipeline podatki
     config = DummyProjectConfig(
         pipeline=PipelineConfig(
             dataset_path="dummy/path/data.csv",
@@ -42,9 +40,8 @@ def test_project_config_inheritance():
         ai=AIConfig(num_of_epochs=5)
     )
 
-    # Preverimo, če so vrednosti pravilno nastavljene in dedovane
     assert config.custom_param == "test_value"
-    assert config.ai.num_of_epochs == 5              # Preglašena vrednost
-    assert config.ai.batch_size == 64                # Privzeta vrednost iz jedra
+    assert config.ai.num_of_epochs == 5
+    assert config.ai.batch_size == 64
     assert config.pipeline.dataset_path == "dummy/path/data.csv"
-    assert config.nas.population_size == 3           # Privzeta vrednost za NAS
+    assert config.nas.population_size == 3

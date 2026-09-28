@@ -67,4 +67,3 @@ class GlobalConfig:
     pipeline: PipelineConfig
     ai: AIConfig = field(default_factory=AIConfig)
     nas: NASConfig = field(default_factory=NASConfig)
-    
