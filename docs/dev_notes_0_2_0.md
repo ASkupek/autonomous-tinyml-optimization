@@ -44,3 +44,11 @@ In core/data_processing we added two classes:
 * base_provider.py: BaseDataProvider -> Introduces at the moment prepare_dataset method that need to be rewritten for each usecase.
 
 User can then add into use_cases/their_usecase/ a file for example: carla_provider.py that implements prepare_dataset and return the 3 objects (train, validation and test) datasets. In future we will break out method to multiple methods to have nicer coding standard.
+
+## Model change in core:
+We basically just make two interfaces _build_network and forward. Those methods will be moved to use_cases/carla_driving/carla_models.py.
+There inside we actually move both methods. As said already few times now, at the moment we are just separating the interfaces and that is it.
+Some basic tests are also added.
+
+## Data and exported models:
+Data folder need to be part of specific usecase, that is also a reason that we move it there now. Also exported models need to be now in the specific use_case folder.

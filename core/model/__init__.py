@@ -1,13 +1,10 @@
-"""Machine Learning Pipeline for CARLA Autonomous Driving.
+"""Core Neural Network Models Package.
 
-This package encompasses the entire ML lifecycle, including data preprocessing,
-neural network architecture definitions, training loops, and optimization .
+This package provides foundational neural network abstractions and base classes
+for architecture design across various TinyML use cases.
 """
 
-from .preprocessing import DataPreprocessing
-from .models import AutonomousDriving
-from .train import ModelsTraining
-from .nas import NAS, NASHistoryCallback
-from .export_engine import ExportEngine
+from .base_models import BaseModel
 
-__all__ = ["DataPreprocessing", "AutonomousDriving", "ModelsTraining", "NAS", "ExportEngine", "NASHistoryCallback"]
+
+__all__ = ["BaseModel"]

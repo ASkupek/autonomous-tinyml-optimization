@@ -1,15 +1,8 @@
-"""Autonomous Driving Neural Network Architecture.
-
-This module defines a dynamic PyTorch neural network model capable of processing
-vehicle telemetry inputs and predicting driving controls (e.g., steering).
-Supports dynamic layer configurations and optional layer normalization.
-"""
-
-from typing import List
-
+from typing import Any, List
 import torch
 import torch.nn as nn
 
+from core.model import BaseModel
 from config import GLOBAL_CONFIG, GlobalConfig
 
 #Documentation and blogs:
@@ -18,31 +11,29 @@ from config import GLOBAL_CONFIG, GlobalConfig
 #https://docs.pytorch.org/docs/2.13/index.html
 #https://docs.pytorch.org/tutorials/beginner/pytorch_with_examples.html
 
+class AutonomousDriving(BaseModel):
+    """CARLA-specific dynamic neural network model.
 
-# TODO(v0.2.0): Rename class from AutonomousDriving to DynamicMLP or GenericMLP 
-#               since the dynamic architecture engine is fully dataset-agnostic.
-# TODO(v0.2.0): Refactor output activation splitting in forward() to be dynamic based on config 
-#               (e.g., config-driven activation maps per output index instead of hardcoded 2:3 and 0:2 slices).
-# TODO(v0.2.0): Creation of the model and especially dropout need to be generic and not hardcoded. This should lead to rewrite of _forward method also.
-class AutonomousDriving(nn.Module):
-    """A PyTorch neural network model for autonomous driving tasks.
+    Processes sequential telemetry data through a GRU backbone followed by 
+    fully connected layers, tailored specifically for autonomous driving control prediction.
 
-    This model is designed to process input features and predict target outputs
-    relevant to autonomous driving, such as steering angles, speed, and other
-    driving-related metrics.
+    Attributes:
+        config (GlobalConfig): Configuration object containing simulation parameters.
+        layer_norm (bool): Flag indicating whether layer normalization is enabled.
+        input_size (int): Number of input features per time step.
+        output_size (int): Number of target prediction outputs.
+        hidden_size (int): Dimension size of the GRU hidden layer.
     """
 
-    def __init__(self, layer_structure: List[int], activation_type: str = "relu", layer_norm: bool = False, config: GlobalConfig = GLOBAL_CONFIG) -> None:
-        """Initializes the neural network architecture based on the provided configuration.
-
-        Args:
-            layer_structure (List[int]): List of hidden layer dimensions.
-            activation_type (str): Type of activation function ('relu', 'tanh', 'sigmoid'). Defaults to "relu".
-            layer_norm (bool): Enables Layer Normalization between hidden layers. Defaults to False.
-            config (GlobalConfig): Object containing network and simulation parameters. Defaults to GLOBAL_CONFIG.
-        """
-        #Initialize the PyTorch nn.Module
-        super(AutonomousDriving, self).__init__()
+    def __init__(
+        self, 
+        layer_structure: List[int], 
+        activation_type: str = "relu", 
+        layer_norm: bool = False, 
+        config: GlobalConfig = GLOBAL_CONFIG
+    ) -> None:
+        """Initializes the CARLA autonomous driving network architecture."""
+        super().__init__()
         self.config: GlobalConfig = config
         self.layer_norm: bool = layer_norm
         self.activation_function: nn.Module = self._get_activation_function(activation_type=activation_type)
@@ -86,7 +77,7 @@ class AutonomousDriving(nn.Module):
 
         self._build_network(layer_structure=layer_structure)
 
-    def _build_network(self, layer_structure: List[int]):
+    def _build_network(self, layer_structure: List[int], **kwargs: Any) -> None:
         """Builds or rebuilds the neural network layers dynamically.
 
         Args:
@@ -134,31 +125,7 @@ class AutonomousDriving(nn.Module):
             print(f"[Model Error] Failed to build network layers: {error}")
             raise error
 
-    def build_network(self, layer_structure: List[int]) -> None:
-            """Public interface to dynamically rebuild the neural network layers."""
-            self._build_network(layer_structure=layer_structure)
 
-    def _get_activation_function(self, activation_type: str) -> nn.Module:
-        """Returns the activation function based on the specified type.
-
-        Args:
-            activation_type (str): Type of activation function ('relu', 'tanh', 'sigmoid').
-
-        Returns:
-            nn.Module: Corresponding PyTorch activation function module.
-
-        Raises:
-            ValueError: If an unsupported activation string is provided.
-        """
-        if activation_type == "relu":
-            return nn.ReLU()
-        elif activation_type == "tanh":
-            return nn.Tanh()
-        elif activation_type == "sigmoid":
-            return nn.Sigmoid()
-        else:
-            raise ValueError(f"[Model Error] Unsupported activation type: {activation_type}")
-        
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         """Defines the forward pass of the neural network.
         Args:
