@@ -1,0 +1,28 @@
+{
+    "rank": 2,
+    "layer_structure": [
+        82,
+        101,
+        57,
+        29
+    ],
+    "activation_type": "relu",
+    "layer_norm": false,
+    "parameter_count": 37557,
+    "model_size_kb": 146.71,
+    "tinyml_cost": 150.6564,
+    "validation_loss": 0.002304,
+    "is_valid": true,
+    "weights_path": "use_cases/carla_driving/exported_models/model_rank_2.pt",
+    "tflite_path": "use_cases/carla_driving/exported_models/model_rank_2.tflite",
+    "c_header_path": "use_cases/carla_driving/exported_models/model_rank_2.h",
+    "tflite_size_kb": 155.55,
+    "verification": {
+        "pt_tf_mae": 1.7454613310263767e-09,
+        "pt_tf_rmse": 6.309538669313497e-09,
+        "pt_tf_max": 1.1920928955078125e-07,
+        "tf_tflite_mae": 0.0024675983004271984,
+        "tf_tflite_rmse": 0.007276738528162241,
+        "tf_tflite_max": 0.17224082350730896
+    }
+}
