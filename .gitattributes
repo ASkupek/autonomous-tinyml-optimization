@@ -1,0 +1,6 @@
+use_cases/carla_driving/data/raw/carla_dataset.csv filter=lfs diff=lfs merge=lfs -text
+use_cases/carla_driving/data/raw/carla_dataset_downsampled.csv filter=lfs diff=lfs merge=lfs -text
+use_cases/carla_driving/data/processed_dataset/test.npz filter=lfs diff=lfs merge=lfs -text
+use_cases/carla_driving/data/processed_dataset/train.npz filter=lfs diff=lfs merge=lfs -text
+use_cases/carla_driving/data/processed_dataset/validation.npz filter=lfs diff=lfs merge=lfs -text
+use_cases/carla_driving/data/processed/testdata.npz filter=lfs diff=lfs merge=lfs -text
