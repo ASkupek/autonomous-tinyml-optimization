@@ -52,3 +52,10 @@ Some basic tests are also added.
 
 ## Data and exported models:
 Data folder need to be part of specific usecase, that is also a reason that we move it there now. Also exported models need to be now in the specific use_case folder.
+
+## Train update:
+We added a test and comment a bit better the train. But run_training is a common method that should be used across multiple usecases that is why we didn't rewrite it and we didnt add any interface inside.
+
+## NAS
+We switch also here to a bit different thing. User need to give xl and xu into the basenas, with this we gain that there is unlimited amount of boundaries inside. User also need to rewrite the _evaluate method, since evaluation is also a different between usecases. _decode method will build a nice view of the search_space.
+In this class we always need to add model and training, since the NAS in dynamically build the model and test it.

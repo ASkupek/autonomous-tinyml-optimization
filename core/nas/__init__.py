@@ -1,13 +1,9 @@
-"""Machine Learning Pipeline for CARLA Autonomous Driving.
+"""Neural Architecture Search (NAS) Package.
 
-This package encompasses the entire ML lifecycle, including data preprocessing,
-neural network architecture definitions, training loops, and optimization .
+This package provides foundational NAS engine abstractions, optimization loops,
+and callback mechanisms built on top of Pymoo for multi-objective optimization.
 """
 
-from .preprocessing import DataPreprocessing
-from .models import AutonomousDriving
-from .train import ModelsTraining
-from .nas import NAS, NASHistoryCallback
-from .export_engine import ExportEngine
+from .base_nas import BaseNAS, NASHistoryCallback
 
-__all__ = ["DataPreprocessing", "AutonomousDriving", "ModelsTraining", "NAS", "ExportEngine", "NASHistoryCallback"]
+__all__ = ["BaseNAS", "NASHistoryCallback"]
