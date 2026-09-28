@@ -1,13 +1,10 @@
-"""Machine Learning Pipeline for CARLA Autonomous Driving.
+"""Training Package.
 
-This package encompasses the entire ML lifecycle, including data preprocessing,
-neural network architecture definitions, training loops, and optimization .
+This package provides foundational training and evaluation managers 
+for neural network optimization across the framework.
 """
 
-from .preprocessing import DataPreprocessing
-from .models import AutonomousDriving
 from .train import ModelsTraining
-from .nas import NAS, NASHistoryCallback
-from .export_engine import ExportEngine
 
-__all__ = ["DataPreprocessing", "AutonomousDriving", "ModelsTraining", "NAS", "ExportEngine", "NASHistoryCallback"]
+
+__all__ = ["ModelsTraining"]
