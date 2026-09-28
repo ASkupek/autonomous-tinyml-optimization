@@ -59,3 +59,7 @@ We added a test and comment a bit better the train. But run_training is a common
 ## NAS
 We switch also here to a bit different thing. User need to give xl and xu into the basenas, with this we gain that there is unlimited amount of boundaries inside. User also need to rewrite the _evaluate method, since evaluation is also a different between usecases. _decode method will build a nice view of the search_space.
 In this class we always need to add model and training, since the NAS in dynamically build the model and test it.
+
+## Export engine
+We move export engine to the carla usecase for the moment. We will also generate the interface from thi one but later.
+So at the moment it is moved only to use_case/carla_usecase

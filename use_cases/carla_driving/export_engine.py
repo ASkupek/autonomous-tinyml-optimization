@@ -16,22 +16,23 @@ Due to that we add a check function that will use testdata and compare the outpu
 
 import json
 import os
-from typing import Any, Callable, Dict, Generator, List
+from typing import Any, Callable, Dict, Generator, List, Type
 import numpy as np
-from ml_pipeline.models import AutonomousDriving
 import torch
 from torch.utils.data import DataLoader
 from config import GlobalConfig, GLOBAL_CONFIG
-from .train import  ModelsTraining
-
-# TODO(v0.2.0): act_map = {0: "relu", 1: "tanh", 2: "sigmoid"} -> This need to be updated or taken from the conf file
-# TODO(v0.2.0): Isolate Keras/TensorFlow model conversion into a separate sub-process 
+from core.train import ModelsTraining
+from use_cases.carla_driving.carla_models import AutonomousDriving
+from use_cases.carla_driving.carla_nas import BaseNAS
+# TODO(v0.3.0): act_map = {0: "relu", 1: "tanh", 2: "sigmoid"} -> This need to be updated or taken from the conf file
+# TODO(v0.3.0): Isolate Keras/TensorFlow model conversion into a separate sub-process 
 #               (e.g., via Python multiprocessing) to resolve PyTorch and TensorFlow 
 #               C++ runtime (libgomp/OpenMP) import conflicts cleanly.
-# TODO(v0.2.0): Implementation of this class need to be generic and we need to take the .pt files diferently than as we do now (res_F) this means that we cannot test this function without running complete stack!
-# TODO(v0.2.0):  def verify_models need to be updated, since at the moment is not correct.
-# TODO(v0.2.0): Copy weights function need to be updates especially for layer norm need to be added there
-# TODO(v0.2.0): Keras is always having first layer as GRU, if we change this, also here need to be changed
+# TODO(v0.3.0): Implementation of this class need to be generic and we need to take the .pt files diferently than as we do now (res_F) this means that we cannot test this function without running complete stack!
+# TODO(v0.3.0):  def verify_models need to be updated, since at the moment is not correct.
+# TODO(v0.3.0): Copy weights function need to be updates especially for layer norm need to be added there
+# TODO(v0.3.0): Keras is always having first layer as GRU, if we change this, also here need to be changed
+# TODO(V0.3.0): This class need to be completly rewritten. Also includes duplication of the method inside
 class ExportEngine:
 
     """Engine to process and export top models from NAS optimization results.
@@ -41,18 +42,18 @@ class ExportEngine:
     trains/refines them, and exports their metadata and weights for deployment.
     """
 
-    def __init__(self, config: GlobalConfig = GLOBAL_CONFIG, export_dir: str = "ml_pipeline/exported_models", trainer_factory: Callable[[List[int], str, bool], ModelsTraining] = None) -> None:
+    def __init__(self, trainer_cls: Type[ModelsTraining], config: GlobalConfig = GLOBAL_CONFIG, export_dir: str = "ml_pipeline/exported_models") -> None:
         """Initializes the ExportEngine with the given configuration.
 
         Args:
             config (GlobalConfig): Configuration object containing paths and parameters. Defaults to GLOBAL_CONFIG.
             export_dir (str): Directory where exported models will be saved. Defaults to "ml_pipeline/exported_models".
-            trainer_factory (Callable): Factory function returning an initialized ModelsTraining object.
+            trainer_cls (Type[ModelsTraining]): Trainer class used for evaluation.
         """
         self.config: GlobalConfig = config
         self.export_dir: str = export_dir
 
-        self.trainer_factory: Callable[[List[int], str, bool], ModelsTraining] = trainer_factory
+        self.trainer_cls: Type[ModelsTraining] = trainer_cls
         # Create the export directory if it doesn't exist
         os.makedirs(self.export_dir, exist_ok=True)
 
@@ -169,6 +170,45 @@ class ExportEngine:
             print(f"[Export Engine] Verification failed: {error}")
             raise error
 
+    #DUPLICATED
+    def compute_weighted_loss(self, outputs: torch.Tensor, y_true: torch.Tensor) -> torch.Tensor:
+        """Calculates a custom weighted Mean Squared Error (MSE) loss.
+
+        Samples with larger ground-truth steering angles receive higher weights.
+        This prioritizes accurate predictions during turns and recovery maneuvers
+        over straight-line driving.
+
+
+        Args:
+            outputs (torch.Tensor): Predicted model outputs of shape (batch_size, num_outputs).
+            y_true (torch.Tensor): Ground-truth target values of shape (batch_size, num_outputs).
+
+        Returns:
+            torch.Tensor: Scalar tensor representing the mean weighted loss for the batch.
+        """
+        y_true_reshaped = y_true.view_as(outputs)
+
+        # Squared error between predicted and true values
+        error = torch.square(outputs - y_true_reshaped)
+
+        # absolute value of the true steering angle to determine the weight for each sample
+        abs_y = torch.abs(y_true_reshaped)
+
+        
+        # Steering samples are weighted according to their magnitude.
+        # The weight increases linearly from 1.0 at |steer| = 0.0
+        # to 3.0 at |steer| = 0.1 and is capped at 3.0.
+        #
+        # |steer| = 0.00 -> weight = 1.0
+        # |steer| = 0.05 -> weight = 2.0
+        # |steer| >= 0.10 -> weight = 3.0
+        weights = 1.0 + 2.0 * torch.clamp(
+            abs_y / 0.1,
+            min=0.0,
+            max=1.0
+        )
+        # Return weighted MSE
+        return torch.mean(weights * error)
 
     def representative_data_gen(self, validation_loader:DataLoader) -> Generator[List[np.ndarray], None, None]:
         """This generator yields representative samples from the validation loader for TFLite quantization.
@@ -503,12 +543,10 @@ class ExportEngine:
                 print(f"[Export Engine] Exporting Rank #{rank}: Layers={layer_structure}, Act={activation_type}, Loss={validation_loss:.4f}")
 
                 self.config.ai.num_of_epochs = 20
-                trainer = self.trainer_factory(
-                    layer_structure=layer_structure,
-                    activation_type=activation_type,
-                    layer_norm=layer_norm,
-                    config=self.config
-                )
+
+
+                model = AutonomousDriving(layer_structure=layer_structure, activation_type=activation_type, layer_norm=layer_norm, config=self.config)
+                trainer = ModelsTraining(config=self.config, train_loader=train_loader, validation_loader=validation_loader, layer_structure=layer_structure, activation_type=activation_type, layer_norm=layer_norm, model=model,loss_fn=self.compute_weighted_loss)
 
                 # Lets train the model
                 trainer.run_training()
