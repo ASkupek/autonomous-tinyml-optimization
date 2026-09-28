@@ -229,3 +229,6 @@ hardware/
 **/debug/
 **/build/
 *.yml
+
+# VS Code specific ignore
+.vscode/
